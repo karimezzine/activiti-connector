@@ -1,0 +1,45 @@
+<?xml version="1.0" encoding="UTF-8"?>
+
+<mule xmlns:dw="http://www.mulesoft.org/schema/mule/ee/dw" xmlns:activiti="http://www.mulesoft.org/schema/mule/activiti" xmlns:http="http://www.mulesoft.org/schema/mule/http" xmlns="http://www.mulesoft.org/schema/mule/core" xmlns:doc="http://www.mulesoft.org/schema/mule/documentation"
+	xmlns:spring="http://www.springframework.org/schema/beans" 
+	xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+	xsi:schemaLocation="http://www.springframework.org/schema/beans http://www.springframework.org/schema/beans/spring-beans-current.xsd
+http://www.mulesoft.org/schema/mule/core http://www.mulesoft.org/schema/mule/core/current/mule.xsd
+http://www.mulesoft.org/schema/mule/http http://www.mulesoft.org/schema/mule/http/current/mule-http.xsd
+http://www.mulesoft.org/schema/mule/activiti http://www.mulesoft.org/schema/mule/activiti/current/mule-activiti.xsd
+http://www.mulesoft.org/schema/mule/ee/dw http://www.mulesoft.org/schema/mule/ee/dw/current/dw.xsd">
+    <http:listener-config name="HTTP_Listener_Configuration" host="0.0.0.0" port="8081" doc:name="HTTP Listener Configuration"/>
+    <activiti:config name="Activiti__Configuration" host="10.130.0.4" port="8080" password="muleesb" username="muleesb@joinexperience.com" doc:name="Activiti: Configuration"/>
+    <flow name="activiti-testFlow">
+        <http:listener config-ref="HTTP_Listener_Configuration" path="/activiti" doc:name="HTTP"/>
+        <dw:transform-message doc:name="Transform Message">
+            <dw:set-payload><![CDATA[%dw 1.0
+%output application/json
+---
+{
+	processDefinitionId: "test",
+	values: ""
+}]]></dw:set-payload>
+        </dw:transform-message>
+        <activiti:instanciate-process config-ref="Activiti__Configuration" processDefinitionName="DocumentProcess" doc:name="Activiti">
+         <activiti:map>
+                <activiti:map key="firstname">Karim</activiti:map>
+                <activiti:map key="lastname">Ezzine</activiti:map>
+            </activiti:map>
+        </activiti:instanciate-process>
+        <set-variable variableName="instance_id" value="#[json:instance_id]" doc:name="instance_id"/>
+        <activiti:get-current-task config-ref="Activiti__Configuration" doc:name="Activiti" processInstanceId="#[flowVars.instance_id]"/>
+        <activiti:complete-task config-ref="Activiti__Configuration" taskId="#[json:task_id]" doc:name="Activiti">
+            <activiti:map>
+                <activiti:map key="firstname">#[flowVars.instance_id]</activiti:map>
+                <activiti:map key="lastname">Ezzine</activiti:map>
+            </activiti:map>
+        </activiti:complete-task>
+
+        <set-payload value="#[message.payloadAs(java.lang.String)]" encoding="UTF-8" mimeType="application/json" doc:name="Set Payload"/>
+        <catch-exception-strategy doc:name="Catch Exception Strategy">
+            <set-payload value="#[exception.cause.toString()]" encoding="UTF-8" mimeType="application/json" doc:name="Set Payload"/>
+            <logger message="exceptio : #[exception.cause.toString()]" level="INFO" doc:name="Logger"/>
+        </catch-exception-strategy>
+    </flow>
+</mule>
