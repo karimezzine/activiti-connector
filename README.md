@@ -1,23 +1,14 @@
 # Activiti Anypoint Connector
 
-[Connector description including destination service or application with]
+This connector offer the posibility to connect with activit BPM using REST api and also provide predifined operations.
 
 # Mule supported versions
-Examples:
-Mule 3.4.x, 3.5.x
-Mule 3.4.1
 
-# [Destination service or application name] supported versions
-Example:
-Oracle E-Business Suite 12.1 and above.
+MULE 3.7.X or later 
 
-#Service or application supported modules
-Example:
-Oracle CRM
-Oracle Financials
-or 
-Salesforce API v.24
-Salesforce Metadata API
+# Supported Activiti Versions
+ 
+ Activiti 5.2 or above
 
 
 # Installation 
@@ -31,4 +22,4 @@ For information about usage our documentation at http://github.com/mulesoft/acti
 
 # Reporting Issues
 
-We use GitHub:Issues for tracking issues with this connector. You can report new issues at this link http://github.com/mulesoft/activiti/issues.# activiti-connector
+We use GitHub:Issues for tracking issues with this connector. You can report new issues at this link https://github.com/karimezzine/activiti-connector/issues activiti-connector
